@@ -27,13 +27,15 @@ var icons = [
  *   - add each card's HTML to the page
  */
 var shuffled = icons;
+var opened = []
+
 $(document).ready(function () {
     var shuffled = shuffle(icons);
     show(shuffled);
     $(".card").click(function () {
-        $(this).toggleClass("open show");
+        checkOpened(this)
     })
-});
+
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -58,6 +60,8 @@ function show(array){
 }
 
 
+
+
 /*
  * set up the event listener for a card. If a card is clicked:
  *  - display the card's symbol (put this functionality in another function that you call from this one)
@@ -72,11 +76,25 @@ function show(array){
 
 
 
-function checkOpened() {
-
+function checkOpened(element) {
+    if(opened.length < 2){
+        opened.push(element)
+    $(element).toggleClass("open show");
+    checkMatched(opened);
+    }
+    else { 
+    $('.card.open.show').removeClass('open show');
+    opened = []
+    }
 }
 
 
-function checkMatched(element) {
-
+function checkMatched(opened) {
+    if($(opened[0]).children('i').attr('class') === $(opened[1]).children('i').attr('class')){
+        $(opened[0]).toggleClass('match')
+        $(opened[1]).toggleClass('match')
+        opened = []
+    }
 }
+
+});
