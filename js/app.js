@@ -20,6 +20,9 @@ var icons = [
     'fa-bicycle',
     'fa-bomb'
 ];
+var matched = 0;
+var initialNumberOfMoves = 20;
+var numberOfMoves = initialNumberOfMoves;
 /*
  * Display the cards on the page
  *   - shuffle the list of cards using the provided "shuffle" method below
@@ -27,13 +30,17 @@ var icons = [
  *   - add each card's HTML to the page
  */
 var shuffled = icons;
-var opened = []
+var opened = [];
 
 $(document).ready(function () {
     var shuffled = shuffle(icons);
     show(shuffled);
     $(".card").click(function () {
         checkOpened(this)
+    })
+
+    $('.restart').click(function(){
+        resetGame();
     })
 
 
@@ -77,12 +84,15 @@ function show(array){
 
 
 function checkOpened(element) {
-    if(opened.length < 2){
+    var validateClass = 'card open show'
+    if($(element).attr('class') !== validateClass && opened.length < 2){
         opened.push(element)
     $(element).toggleClass("open show");
-    checkMatched(opened);
+    
     }
+        
     else { 
+        checkMatched(opened);
     $('.card.open.show').removeClass('open show');
     opened = []
     }
@@ -93,8 +103,54 @@ function checkMatched(opened) {
     if($(opened[0]).children('i').attr('class') === $(opened[1]).children('i').attr('class')){
         $(opened[0]).toggleClass('match')
         $(opened[1]).toggleClass('match')
-        opened = []
+        matched++;
+        console.log("Matched:" + matched)
+        if(matched == 8){
+            winGame()
+        }
     }
+    else{
+        reduceNumberOfMoves();
+        if(numberOfMoves == 0){
+            endGame()
+        }
+    }
+}
+function reduceNumberOfMoves(){
+    numberOfMoves--;
+    console.log(numberOfMoves)
+    $('.moves').text(numberOfMoves)
+    reduceStar()
+}
+function endGame(){
+    $('.deck').hide();
+    $('.container').append('<h1 style="color: red">You Lost 😞</h1>')
+}
+
+
+function winGame(){
+    $('.deck').hide();
+    $('.container').append('<h1 style="color: green">You Won 🎊</h1>')
 }
 
 });
+
+
+function resetGame(){
+    $('.match').removeClass('match')
+    $('.container > h1').hide()
+    $('.deck').show()
+    numberOfMoves = initialNumberOfMoves;
+    $('.moves').text(initialNumberOfMoves)
+    $('.stars i').removeClass('fa-star-o').addClass('fa-star');
+}
+
+function reduceStar(){
+    if(numberOfMoves < initialNumberOfMoves / 2 )
+    $('.stars li:nth-child(1) > i').removeClass('fa-star').addClass('fa-star-o')
+    if(numberOfMoves < initialNumberOfMoves / 3)
+    $('.stars li:nth-child(2) > i').removeClass('fa-star').addClass('fa-star-o')
+    if (numberOfMoves < 2){
+        $('.stars li:nth-child(3) > i').removeClass('fa-star').addClass('fa-star-o')
+    }
+}
