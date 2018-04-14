@@ -84,7 +84,7 @@ function show(array){
 
 
 function checkOpened(element) {
-    var validateClass = 'card open show'
+    var validateClass = 'card open show animated '
     if($(element).attr('class') !== validateClass && opened.length < 2){
         opened.push(element)
     $(element).toggleClass("open show");
@@ -101,7 +101,7 @@ function checkOpened(element) {
 
 function checkMatched(opened) {
     if($(opened[0]).children('i').attr('class') === $(opened[1]).children('i').attr('class')){
-        $(opened[0]).toggleClass('match')
+        $(opened[0]).toggleClass('match animated bounceIn')
         $(opened[1]).toggleClass('match')
         matched++;
         console.log("Matched:" + matched)
@@ -110,6 +110,12 @@ function checkMatched(opened) {
         }
     }
     else{
+        $(opened[0]).toggleClass('wrong open animated shake')
+        $(opened[1]).toggleClass('wrong open animated shake')
+        setTimeout(function(){
+            $(opened[0]).toggleClass('wrong show');
+            $(opened[1]).toggleClass('wrong show');
+        },700);
         reduceNumberOfMoves();
         if(numberOfMoves == 0){
             endGame()
